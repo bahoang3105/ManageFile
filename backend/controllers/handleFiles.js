@@ -34,7 +34,19 @@ exports.getAllFile = async (req, res) => {
     };
 };
 
-exports.uploadFile = async (req, res) => {
+const uploadFile = async (file) => {
+    const myFile = file.originalname.split('.');
+    const fileType = myFile[myFile.length - 1];
+
+    const params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: `${uuid()}.${fileType}`,
+        Body: file.buffer,
+    };
+    return s3.upload(params).promise();
+}
+
+exports.insertFile = async (req, res) => {
     try {
         // identity verification
         var token = req.headers['x-access-token'];
@@ -54,16 +66,7 @@ exports.uploadFile = async (req, res) => {
         const size = req.file.size;
         const date = new Date();
 
-        // upload file into aws
-        const params = {
-            Bucket: process.env.AWS_BUCKET_NAME,
-            Key: `${uuid()}.${fileType}`,
-            Body: req.file.buffer,
-        };
-
-        s3.upload(params, (error) => {
-            if(error) return res.status(500).json({ success: false, message: "Cannot upload file."});
-        });
+        await uploadFile(req.file);
         
         // insert file details into database
         const newFile = {
@@ -73,9 +76,11 @@ exports.uploadFile = async (req, res) => {
             size: size,
             date: date,
         };
+
         await File.create(newFile);
         
-        return res.status(200).json({ success: true });
+        // return res.status(200).send(fileUploaded);
+        return res.status(200).json({ success: true })
     } catch(error) {
         res.status(400).json({ success: false, message: error + " "});
     };
