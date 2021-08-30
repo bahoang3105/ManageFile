@@ -14,9 +14,11 @@ app.use(cors());
 
 // Import Routes
 const userRoute = require('./routers/User');
+const fileRoute = require('./routers/File');
 
 app.use('/user', userRoute);
+app.use('/file', fileRoute);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, console.log(`Server started on ${PORT}`));
