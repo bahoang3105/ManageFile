@@ -11,6 +11,10 @@ const User = (sequelize, Sequelize) => {
         password: {
             type: Sequelize.STRING
         },
+        role: {
+            type: Sequelize.INTEGER,
+            defaultValue: 0 // 0 is normal user, 1 is admin
+        }
     }, { freezeTableName: true, timestamps: false, tableName: 'user' });
 
     return User;

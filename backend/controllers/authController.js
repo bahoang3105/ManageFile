@@ -37,7 +37,7 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const { username, password } = req.body;
-        const user = await User.findOne({ username: username });
+        const user = await User.findOne({ where: { username: username } });
         if(!user) {
             return res.status(400).json({ success: false, message: "Wrong username or password!"});
         }
@@ -45,6 +45,38 @@ export const login = async (req, res) => {
         if(!checkPassword) {
             return res.status(400).json({ success: false, message: "Wrong username or password!"});
         }
+        const payload = {
+            userID: user.id,
+            created: new Date(),
+            user: user,
+        };
+
+        const token = await jwt.sign(payload, "secret", { expiresIn: "24h" });
+        return res.json({ success: true, token: token });
+    } catch(err) {
+        console.log(err + " ");
+        return res.status(400).json({ success: false, message: err + " "});
+    }
+};
+
+export const loginAdmin = async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const user = await User.findOne({ where: { username: username } });
+        if(!user) {
+            return res.status(400).json({ success: false, message: "Wrong username or password!"});
+        }
+        const checkPassword = await bcryptjs.compare(password, user.password);
+        if(!checkPassword) {
+            return res.status(400).json({ success: false, message: "Wrong username or password!"});
+        }
+
+        // check role
+        const checkAdmin = user.role;
+        if(checkAdmin === 0) {
+            return res.status(400).json({ success: false, message: "Wrong username or password!"});
+        }
+
         const payload = {
             userID: user.id,
             created: new Date(),

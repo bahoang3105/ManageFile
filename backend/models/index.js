@@ -21,7 +21,7 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.users = File(sequelize, Sequelize);
-db.files = User(sequelize, Sequelize);
+db.users = User(sequelize, Sequelize);
+db.files = File(sequelize, Sequelize);
 
 export default db;
