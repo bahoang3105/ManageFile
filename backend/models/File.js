@@ -1,4 +1,4 @@
-module.exports = (sequelize, Sequelize) => {
+const File = (sequelize, Sequelize) => {
     const File = sequelize.define("file", {
         fileID: {
             type: Sequelize.INTEGER,
@@ -31,3 +31,5 @@ module.exports = (sequelize, Sequelize) => {
 
     return File;
 };
+
+export default File;

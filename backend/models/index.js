@@ -1,6 +1,8 @@
-const dbConfig = require('../config/database');
+import dbConfig from '../config/database';
+import Sequelize from 'sequelize';
+import File from './File';
+import User from './User';
 
-const Sequelize = require('sequelize');
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     host: dbConfig.HOST,
     dialect: dbConfig.dialect,
@@ -19,7 +21,7 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.users = require("./User")(sequelize, Sequelize);
-db.files = require("./File")(sequelize, Sequelize);
+db.users = File(sequelize, Sequelize);
+db.files = User(sequelize, Sequelize);
 
-module.exports = db;
+export default db;

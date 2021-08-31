@@ -1,24 +1,25 @@
-require('dotenv/config');
-const db = require('../models');
+import 'dotenv/config';
+import db from '../models';
+import AWS from 'aws-sdk';
+import { v4 as uuid } from 'uuid';
+import jwt from 'jsonwebtoken';
+import fs from 'fs';
+
 const File = db.files;
-const AWS = require('aws-sdk');
-const { v4: uuid } = require('uuid');
-const jwt = require('jsonwebtoken');
-const fs = require('fs');
 
 const s3 = new AWS.S3({
     accessKeyId: process.env.AWS_ID,
     secretAccessKey: process.env.AWS_SECRET,
 });
 
-exports.getAllFile = async (req, res) => {
+export const getAllFile = async (req, res) => {
     try {
         //identity verification
         var token = req.headers['x-access-token'];
         if(!token) return res.status(401).json({ success: false, message: "No token provided." });
 
         var tokenDecoded;
-        jwt.verify(token, "secret", function(err, decoded) {
+        jwt.verify(token, "secret", (err, decoded) => {
             if(err) {
                 return res.status(500).json({ success: false, message: "Failed to authenticate token." });
             }
@@ -46,14 +47,14 @@ const uploadFile = (file) => {
     return s3.upload(params).promise();
 }
 
-exports.insertFile = async (req, res) => {
+export const insertFile = async (req, res) => {
     try {
         // identity verification
         var token = req.headers['x-access-token'];
         if(!token) return res.status(401).json({ success: false, message: "No token provided." });
 
         var tokenDecoded;
-        jwt.verify(token, "secret", function(err, decoded) {
+        jwt.verify(token, "secret", (err, decoded) => {
             if(err) {
                 return res.status(500).json({ success: false, message: "Failed to authenticate token." });
             }
@@ -87,14 +88,14 @@ exports.insertFile = async (req, res) => {
     };
 };
 
-exports.deleteFile = async (req, res) => {
+export const deleteFile = async (req, res) => {
     try {
         // identity verification
         var token = req.headers['x-access-token'];
         if(!token) return res.status(401).json({ success: false, message: "No token provided." });
 
         var tokenDecoded;
-        jwt.verify(token, "secret", function(err, decoded) {
+        jwt.verify(token, "secret", (err, decoded) => {
             if(err) {
                 return res.status(500).json({ success: false, message: "Failed to authenticate token." });
             }
@@ -128,14 +129,14 @@ exports.deleteFile = async (req, res) => {
     };
 };
 
-exports.detailFile = async (req, res) => {
+export const detailFile = async (req, res) => {
     try {
         // identity verification
         var token = req.headers['x-access-token'];
         if(!token) return res.status(401).json({ success: false, message: "No token provided." });
 
         var tokenDecoded;
-        jwt.verify(token, "secret", function(err, decoded) {
+        jwt.verify(token, "secret", (err, decoded) => {
             if(err) {
                 return res.status(500).json({ success: false, message: "Failed to authenticate token." });
             }
@@ -177,14 +178,14 @@ const downloadFromS3 = (fileKey) => {
     return s3.getObject(params).promise();
 };
 
-exports.downloadFile = async (req, res) => {
+export const downloadFile = async (req, res) => {
     try {
         // identity verification
         var token = req.headers['x-access-token'];
         if(!token) return res.status(401).json({ success: false, message: "No token provided." });
 
         var tokenDecoded;
-        jwt.verify(token, "secret", function(err, decoded) {
+        jwt.verify(token, "secret", (err, decoded) => {
             if(err) {
                 return res.status(500).json({ success: false, message: "Failed to authenticate token." });
             }

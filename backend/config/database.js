@@ -1,4 +1,4 @@
-module.exports = {
+const dbConfig = {
     HOST: "localhost",
     USER: "root",
     PASSWORD: "39521104",
@@ -11,3 +11,5 @@ module.exports = {
         idle: 10000
     }
 };
+
+export default dbConfig;
