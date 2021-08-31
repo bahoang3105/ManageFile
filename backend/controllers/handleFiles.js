@@ -1,7 +1,6 @@
 require('dotenv/config');
 const db = require('../models');
 const File = db.files;
-const User = db.users;
 const AWS = require('aws-sdk');
 const { v4: uuid } = require('uuid');
 const jwt = require('jsonwebtoken');
@@ -79,17 +78,90 @@ exports.insertFile = async (req, res) => {
 
         await File.create(newFile);
         
-        // return res.status(200).send(fileUploaded);
-        return res.status(200).json({ success: true })
+        return res.status(201).json({ success: true })
     } catch(error) {
         res.status(400).json({ success: false, message: error + " "});
     };
 };
 
 exports.deleteFile = async (req, res) => {
+    try {
+        // identity verification
+        var token = req.headers['x-access-token'];
+        if(!token) return res.status(401).json({ success: false, message: "No token provided." });
 
+        var tokenDecoded;
+        jwt.verify(token, "secret", function(err, decoded) {
+            if(err) {
+                return res.status(500).json({ success: false, message: "Failed to authenticate token." });
+            }
+            tokenDecoded = decoded;
+        });
+
+        // check if user, file exist or this user is the owner of the file
+        const userID = tokenDecoded.user.userID;
+        const fileID = req.body.fileID;
+        const selectFile = await File.findAll({
+            where: {
+                userId: userID,
+                fileID: fileID,
+            }
+        });
+
+        if(!selectFile) {
+            return res.status(404).json({ success: false, message: "File not found." });
+        }
+
+        // delete file
+        await File.destroy({
+            where: {
+                fileID: fileID,
+            }
+        });
+        
+        return res.status(200).json({ success: true });
+    } catch(error) {
+        res.status(400).json({ success: false, message: error + " "});
+    };
 };
 
 exports.detailFile = async (req, res) => {
+    try {
+        // identity verification
+        var token = req.headers['x-access-token'];
+        if(!token) return res.status(401).json({ success: false, message: "No token provided." });
 
+        var tokenDecoded;
+        jwt.verify(token, "secret", function(err, decoded) {
+            if(err) {
+                return res.status(500).json({ success: false, message: "Failed to authenticate token." });
+            }
+            tokenDecoded = decoded;
+        });
+
+        // check if user, file exist or this user is the owner of the file
+        const userID = tokenDecoded.user.userID;
+        const fileID = req.body.fileID;
+        const selectFile = await File.findAll({
+            where: {
+                userId: userID,
+                fileID: fileID,
+            }
+        });
+
+        if(!selectFile) {
+            return res.status(404).json({ success: false, message: "File not found." });
+        }
+
+        // get file details
+        const fileDetails = await File.findOne({
+            where: {
+                fileID: fileID,
+            }
+        });
+        
+        return res.status(200).json({ success: true, data: fileDetails });
+    } catch(error) {
+        res.status(400).json({ success: false, message: error + " "});
+    };
 };
