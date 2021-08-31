@@ -1,11 +1,10 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
+import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import db from './models';
 
 const app = express();
 
-// sync database
-const db = require('./models');
 db.sequelize.sync();
 
 app.use(bodyParser.json());
@@ -13,8 +12,8 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Import Routes
-const userRoute = require('./routers/User');
-const fileRoute = require('./routers/File');
+import userRoute from './routers/User';
+import fileRoute from './routers/File';
 
 app.use('/user', userRoute);
 app.use('/file', fileRoute);
