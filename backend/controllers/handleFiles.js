@@ -211,7 +211,7 @@ exports.downloadFile = async (req, res) => {
         
         fs.writeFileSync(`${folder}/${selectFile.fileKey}`, fileDownload.Body);
         
-        return res.status(200).json({ success: true, data: fileDownload });
+        return res.status(200).json({ success: true });
     } catch(error) {
         res.status(400).json({ success: false, message: error + " "});
     };
