@@ -1,6 +1,12 @@
 import { Router } from 'express';
-import { insertFile, getAllFile, deleteFile, detailFile, downloadFile } from "../controllers/handleFiles";
 import multer from 'multer';
+import {
+    insertFile, 
+    getAllFile, 
+    deleteFile, 
+    detailFile, 
+    downloadFile 
+} from '../controllers/handleFiles';
 
 const router = Router();
 
@@ -12,10 +18,10 @@ const storage = multer.memoryStorage({
 
 const upload = multer({storage}).single('file');
 
-router.route("/uploadFile").post(upload, insertFile);
-router.route("/").get(getAllFile);
-router.route("/deleteFile").delete(deleteFile);
-router.route("/detailFile").get(detailFile);
-router.route("/downloadFile").get(downloadFile);
+router.route('/uploadFile').post(upload, insertFile);
+router.route('/').get(getAllFile);
+router.route('/deleteFile').delete(deleteFile);
+router.route('/detailFile').get(detailFile);
+router.route('/downloadFile').get(downloadFile);
 
 export default router;

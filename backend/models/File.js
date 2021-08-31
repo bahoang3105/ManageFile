@@ -1,5 +1,5 @@
 const File = (sequelize, Sequelize) => {
-    const File = sequelize.define("file", {
+    const File = sequelize.define('file', {
         fileID: {
             type: Sequelize.INTEGER,
             primaryKey: true,

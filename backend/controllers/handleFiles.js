@@ -15,7 +15,7 @@ const s3 = new AWS.S3({
 export const getAllFile = async (req, res) => {
     try {
         //identity verification
-        var token = req.headers['x-access-token'];
+        const token = req.headers['x-access-token'];
         const verify = verifyIdentify(token);
         if(!verify.success) {
             return res.status(verify.status).json({ success: verify.success, message: verify.message });
@@ -25,11 +25,11 @@ export const getAllFile = async (req, res) => {
 
         // get list file of this user
         const listFile = await File.findAll({ 
-            where: { userID: userID } 
+            where: { userID } 
         });
         return res.status(200).json({ success: true, data: listFile });
     } catch(error) {
-        res.status(400).json({ success: false, message: error + " "});
+        return res.status(400).json({ success: false, message: error + ' '});
     };
 };
 
@@ -37,24 +37,24 @@ export const getAllFile = async (req, res) => {
 export const getAllUserFile = async(req, res) => {
     try {
         //identity verification
-        var token = req.headers['x-access-token'];
+        const token = req.headers['x-access-token'];
         const verify = verifyIdentify(token);
         if(!verify.success) {
             return res.status(verify.status).json({ success: verify.success, message: verify.message });
         }
-        const tokenDecoded = verify.tokenDecoded;
+        const { tokenDecoded } = verify;
         if(tokenDecoded.user.role !== 1) {
-            return res.status(401).json({ success: false, message: "You are not an admin."});
+            return res.status(401).json({ success: false, message: 'You are not an admin.'});
         }
 
         // get all file of an user
-        const userID = req.body.userID;
+        const { userID } = req.body;
         const listFile = await File.findAll({ 
-            where: { userID: userID } 
+            where: { userID } 
         });
-        res.status(200).json({ success: true, data: listFile });
+        return res.status(200).json({ success: true, data: listFile });
     } catch(error) {
-        res.status(400).json({ success: false, message: error + " "});
+        return res.status(400).json({ success: false, message: error + ' '});
     };
 };
 
@@ -62,32 +62,32 @@ export const getAllUserFile = async(req, res) => {
 export const getAllFileInDb = async(req, res) => {
     try {
         //identity verification
-        var token = req.headers['x-access-token'];
+        const token = req.headers['x-access-token'];
         const verify = verifyIdentify(token);
         if(!verify.success) {
             return res.status(verify.status).json({ success: verify.success, message: verify.message });
         }
-        const tokenDecoded = verify.tokenDecoded;
+        const { tokenDecoded } = verify;
         if(tokenDecoded.user.role !== 1) {
-            return res.status(401).json({ success: false, message: "You are not an admin."});
+            return res.status(401).json({ success: false, message: 'You are not an admin.'});
         }
 
         // get all file in DB
         const listFile = await File.findAll();
-        res.status(200).json({ success: true, data: listFile });
+        return res.status(200).json({ success: true, data: listFile });
     } catch(error) {
-        res.status(400).json({ success: false, message: error + " "});
+        return res.status(400).json({ success: false, message: error + ' '});
     };
 };
 
-const uploadFile = (file) => {
-    const myFile = file.originalname.split('.');
+const uploadFile = ({ originalname, buffer }) => {
+    const myFile = originalname.split('.');
     const fileType = myFile[myFile.length - 1];
 
     const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: `${uuid()}.${fileType}`,
-        Body: file.buffer,
+        Body: buffer,
     };
     return s3.upload(params).promise();
 }
@@ -95,18 +95,18 @@ const uploadFile = (file) => {
 export const insertFile = async (req, res) => {
     try {
         //identity verification
-        var token = req.headers['x-access-token'];
+        const token = req.headers['x-access-token'];
         const verify = verifyIdentify(token);
         if(!verify.success) {
             return res.status(verify.status).json({ success: verify.success, message: verify.message });
         }
 
-        const tokenDecoded = verify.tokenDecoded;
+        const { tokenDecoded } = verify;
 
         // get file details
-        let myFile = req.file.originalname.split(".");
+        const { size, originalname } = req.file;
+        myFile = originalname.split('.');
         const fileType = myFile[myFile.length - 1];
-        const size = req.file.size;
         const date = new Date();
 
         const fileUploaded = await uploadFile(req.file);
@@ -114,19 +114,18 @@ export const insertFile = async (req, res) => {
         
         // insert file details into database
         const newFile = {
+            fileType,
+            fileKey,
+            size,
+            date,
             userID: tokenDecoded.user.userID,
-            fileName: req.file.originalname,
-            fileType: fileType,
-            fileKey: fileKey,
-            size: size,
-            date: date,
+            fileName: originalname,
         };
 
         await File.create(newFile);
-        
         return res.status(201).json({ success: true })
     } catch(error) {
-        res.status(400).json({ success: false, message: error + " "});
+        res.status(400).json({ success: false, message: error + ' '});
     };
 };
 
@@ -134,24 +133,24 @@ export const deleteFile = async (req, res) => {
     const fileID = req.body.fileID;
     try {
         //identity verification
-        var token = req.headers['x-access-token'];
+        const token = req.headers['x-access-token'];
         const verify = verifyIdentify(token);
         if(!verify.success) {
             return res.status(verify.status).json({ success: verify.success, message: verify.message });
         }
 
-        const tokenDecoded = verify.tokenDecoded;
+        const { tokenDecoded } = verify;
 
         // check if this is an admin or user, file exist or this user is the owner of the file
-        var check = false;
+        let check = false;
         if(tokenDecoded.user.role === 1) {
             check = true;
         } else {
-            const userID = tokenDecoded.user.userID;
+            const { userID } = tokenDecoded.user;
             const selectFile = await File.findAll({
                 where: {
-                    userId: userID,
-                    fileID: fileID,
+                    userID,
+                    fileID,
                 }
             });
 
@@ -160,44 +159,43 @@ export const deleteFile = async (req, res) => {
             }
         }
         if(!check) {
-            return res.status(400).json({ success: false, message: "File not found" });
+            return res.status(400).json({ success: false, message: 'File not found' });
         }
 
         // delete file
         await File.destroy({
             where: {
-                fileID: fileID,
+                fileID,
             }
         });
-        
         return res.status(200).json({ success: true });
     } catch(error) {
-        res.status(400).json({ success: false, message: error + " "});
+        res.status(400).json({ success: false, message: error + ' ' });
     };
 };
 
 export const detailFile = async (req, res) => {
-    const fileID = req.body.fileID;
+    const { fileID } = req.body;
     try {
         //identity verification
-        var token = req.headers['x-access-token'];
+        const token = req.headers['x-access-token'];
         const verify = verifyIdentify(token);
         if(!verify.success) {
             return res.status(verify.status).json({ success: verify.success, message: verify.message });
         }
 
-        const tokenDecoded = verify.tokenDecoded;
+        const { tokenDecoded } = verify;
 
         // check if this is an admin or user, file exist or this user is the owner of the file
-        var check = false;
+        let check = false;
         if(tokenDecoded.user.role === 1) {
             check = true;
         } else {
             const userID = tokenDecoded.user.userID;
             const selectFile = await File.findAll({
                 where: {
-                    userId: userID,
-                    fileID: fileID,
+                    userID,
+                    fileID,
                 }
             });
 
@@ -206,19 +204,18 @@ export const detailFile = async (req, res) => {
             }
         }
         if(!check) {
-            return res.status(400).json({ success: false, message: "File not found" });
+            return res.status(400).json({ success: false, message: 'File not found' });
         }
 
         // get file details
         const fileDetails = await File.findOne({
             where: {
-                fileID: fileID,
+                fileID,
             }
         });
-        
         return res.status(200).json({ success: true, data: fileDetails });
     } catch(error) {
-        res.status(400).json({ success: false, message: error + " "});
+        res.status(400).json({ success: false, message: error + ' '});
     };
 };
 
@@ -234,30 +231,30 @@ export const downloadFile = async (req, res) => {
     const fileID = req.body.fileID;
     try {
         //identity verification
-        var token = req.headers['x-access-token'];
+        const token = req.headers['x-access-token'];
         const verify = verifyIdentify(token);
         if(!verify.success) {
             return res.status(verify.status).json({ success: verify.success, message: verify.message });
         }
 
-        const tokenDecoded = verify.tokenDecoded;
+        const { tokenDecoded } = verify;
 
         // check if this is an admin or user, file exist or this user is the owner of the file
-        var check = false;
-        var selectFile;
+        let check = false;
+        let selectFile;
         if(tokenDecoded.user.role === 1) {
             check = true;
             selectFile = await File.findOne({
                 where: {
-                    fileID: fileID,
+                    fileID,
                 }
             });
         } else {
-            const userID = tokenDecoded.user.userID;
+            const { userID } = tokenDecoded.user;
             selectFile = await File.findOne({
                 where: {
-                    userId: userID,
-                    fileID: fileID,
+                    userID,
+                    fileID,
                 }
             });
 
@@ -266,19 +263,16 @@ export const downloadFile = async (req, res) => {
             }
         }
         if(!check) {
-            return res.status(400).json({ success: false, message: "File not found" });
+            return res.status(400).json({ success: false, message: 'File not found' });
         }
 
-        console.log(selectFile)
-
         // download file
-        const folder = req.body.folder;
-        const fileDownload = await downloadFromS3(selectFile.dataValues.fileKey);
+        const { folder } = req.body;
+        const { Body } = await downloadFromS3(selectFile.dataValues.fileKey);
         
-        fs.writeFileSync(`${folder}/${selectFile.fileKey}`, fileDownload.Body);
-        
+        fs.writeFileSync(`${folder}/${selectFile.fileKey}`, Body);
         return res.status(200).json({ success: true });
     } catch(error) {
-        res.status(400).json({ success: false, message: error + " "});
+        res.status(400).json({ success: false, message: error + ' '});
     };
 }
