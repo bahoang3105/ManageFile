@@ -41,7 +41,7 @@ router.route('/downloadFile').get(downloadFile);
 router.route('/user').get(getAllUser);
 router.route('/user/delete').delete(deleteUser);
 router.route('/user/resetPassword').post(resetPassUser);
-router.route('/detailUser').get(detailUser);
+router.route('/user/detailUser').get(detailUser);
 router.route('/user/upgrade').post(upgradeToAdmin);
 
 export default router;

@@ -3,7 +3,7 @@ import db from '../models';
 import AWS from 'aws-sdk';
 import { v4 as uuid } from 'uuid';
 import fs from 'fs';
-import verifyIdentify from './verifyIdentity';
+import jwt from 'jsonwebtoken';
 
 const File = db.files;
 
@@ -16,20 +16,25 @@ export const getAllFile = async (req, res) => {
     try {
         //identity verification
         const token = req.headers['x-access-token'];
-        const verify = verifyIdentify(token);
-        if(!verify.success) {
-            return res.status(verify.status).json({ success: verify.success, message: verify.message });
+        let decoded;
+        if(!token) {
+            return res.status(401).json({ message: 'No token provided.' });
         }
+        jwt.verify(token, 'secret', (err, tokenDecoded) => {
+            if(err) {
+                return res.status(500).json({ message: 'Failed to authenticate token.' });
+            }
+            decoded = tokenDecoded;
+        });
 
-        const userID = verify.tokenDecoded.user.userID;
-
+        const userID = decoded.user.userID;
         // get list file of this user
         const listFile = await File.findAll({ 
             where: { userID } 
         });
-        return res.status(200).json({ success: true, data: listFile });
+        return res.status(200).json({ data: listFile });
     } catch(error) {
-        return res.status(400).json({ success: false, message: error + ' '});
+        return res.status(400).json({ message: error + ' '});
     };
 };
 
@@ -38,13 +43,18 @@ export const getAllUserFile = async(req, res) => {
     try {
         //identity verification
         const token = req.headers['x-access-token'];
-        const verify = verifyIdentify(token);
-        if(!verify.success) {
-            return res.status(verify.status).json({ success: verify.success, message: verify.message });
+        let decoded;
+        if(!token) {
+            return res.status(401).json({ message: 'No token provided.' });
         }
-        const { tokenDecoded } = verify;
-        if(tokenDecoded.user.role !== 1) {
-            return res.status(401).json({ success: false, message: 'You are not an admin.'});
+        jwt.verify(token, 'secret', (err, tokenDecoded) => {
+            if(err) {
+                return res.status(500).json({ message: 'Failed to authenticate token.' });
+            }
+            decoded = tokenDecoded;
+        });
+        if(decoded.user.role !== 1) {
+            return res.status(401).json({ message: 'You are not an admin.'});
         }
 
         // get all file of an user
@@ -52,9 +62,9 @@ export const getAllUserFile = async(req, res) => {
         const listFile = await File.findAll({ 
             where: { userID } 
         });
-        return res.status(200).json({ success: true, data: listFile });
+        return res.status(200).json({ data: listFile });
     } catch(error) {
-        return res.status(400).json({ success: false, message: error + ' '});
+        return res.status(400).json({ message: error + ' '});
     };
 };
 
@@ -63,20 +73,25 @@ export const getAllFileInDb = async(req, res) => {
     try {
         //identity verification
         const token = req.headers['x-access-token'];
-        const verify = verifyIdentify(token);
-        if(!verify.success) {
-            return res.status(verify.status).json({ success: verify.success, message: verify.message });
+        let decoded;
+        if(!token) {
+            return res.status(401).json({ message: 'No token provided.' });
         }
-        const { tokenDecoded } = verify;
-        if(tokenDecoded.user.role !== 1) {
-            return res.status(401).json({ success: false, message: 'You are not an admin.'});
+        jwt.verify(token, 'secret', (err, tokenDecoded) => {
+            if(err) {
+                return res.status(500).json({ message: 'Failed to authenticate token.' });
+            }
+            decoded = tokenDecoded;
+        });
+        if(decoded.user.role !== 1) {
+            return res.status(401).json({ message: 'You are not an admin.'});
         }
 
         // get all file in DB
         const listFile = await File.findAll();
-        return res.status(200).json({ success: true, data: listFile });
+        return res.status(200).json({ data: listFile });
     } catch(error) {
-        return res.status(400).json({ success: false, message: error + ' '});
+        return res.status(400).json({ message: error + ' '});
     };
 };
 
@@ -96,16 +111,20 @@ export const insertFile = async (req, res) => {
     try {
         //identity verification
         const token = req.headers['x-access-token'];
-        const verify = verifyIdentify(token);
-        if(!verify.success) {
-            return res.status(verify.status).json({ success: verify.success, message: verify.message });
+        let decoded;
+        if(!token) {
+            return res.status(401).json({ message: 'No token provided.' });
         }
-
-        const { tokenDecoded } = verify;
+        jwt.verify(token, 'secret', (err, tokenDecoded) => {
+            if(err) {
+                return res.status(500).json({ message: 'Failed to authenticate token.' });
+            }
+            decoded = tokenDecoded;
+        });
 
         // get file details
         const { size, originalname } = req.file;
-        myFile = originalname.split('.');
+        const myFile = originalname.split('.');
         const fileType = myFile[myFile.length - 1];
         const date = new Date();
 
@@ -118,14 +137,14 @@ export const insertFile = async (req, res) => {
             fileKey,
             size,
             date,
-            userID: tokenDecoded.user.userID,
+            userID: decoded.user.userID,
             fileName: originalname,
         };
 
         await File.create(newFile);
         return res.status(201).json({ success: true })
     } catch(error) {
-        res.status(400).json({ success: false, message: error + ' '});
+        res.status(400).json({ message: error + ' '});
     };
 };
 
@@ -134,19 +153,23 @@ export const deleteFile = async (req, res) => {
     try {
         //identity verification
         const token = req.headers['x-access-token'];
-        const verify = verifyIdentify(token);
-        if(!verify.success) {
-            return res.status(verify.status).json({ success: verify.success, message: verify.message });
+        let decoded;
+        if(!token) {
+            return res.status(401).json({ message: 'No token provided.' });
         }
-
-        const { tokenDecoded } = verify;
+        jwt.verify(token, 'secret', (err, tokenDecoded) => {
+            if(err) {
+                return res.status(500).json({ message: 'Failed to authenticate token.' });
+            }
+            decoded = tokenDecoded;
+        });
 
         // check if this is an admin or user, file exist or this user is the owner of the file
         let check = false;
-        if(tokenDecoded.user.role === 1) {
+        if(decoded.user.role === 1) {
             check = true;
         } else {
-            const { userID } = tokenDecoded.user;
+            const { userID } = decoded.user;
             const selectFile = await File.findAll({
                 where: {
                     userID,
@@ -159,7 +182,7 @@ export const deleteFile = async (req, res) => {
             }
         }
         if(!check) {
-            return res.status(400).json({ success: false, message: 'File not found' });
+            return res.status(400).json({ message: 'File not found' });
         }
 
         // delete file
@@ -170,7 +193,7 @@ export const deleteFile = async (req, res) => {
         });
         return res.status(200).json({ success: true });
     } catch(error) {
-        res.status(400).json({ success: false, message: error + ' ' });
+        res.status(400).json({ message: error + ' ' });
     };
 };
 
@@ -179,19 +202,23 @@ export const detailFile = async (req, res) => {
     try {
         //identity verification
         const token = req.headers['x-access-token'];
-        const verify = verifyIdentify(token);
-        if(!verify.success) {
-            return res.status(verify.status).json({ success: verify.success, message: verify.message });
+        let decoded;
+        if(!token) {
+            return res.status(401).json({ message: 'No token provided.' });
         }
-
-        const { tokenDecoded } = verify;
+        jwt.verify(token, 'secret', (err, tokenDecoded) => {
+            if(err) {
+                return res.status(500).json({ message: 'Failed to authenticate token.' });
+            }
+            decoded = tokenDecoded;
+        });
 
         // check if this is an admin or user, file exist or this user is the owner of the file
         let check = false;
-        if(tokenDecoded.user.role === 1) {
+        if(decoded.user.role === 1) {
             check = true;
         } else {
-            const userID = tokenDecoded.user.userID;
+            const userID = decoded.user.userID;
             const selectFile = await File.findAll({
                 where: {
                     userID,
@@ -204,7 +231,7 @@ export const detailFile = async (req, res) => {
             }
         }
         if(!check) {
-            return res.status(400).json({ success: false, message: 'File not found' });
+            return res.status(400).json({ message: 'File not found' });
         }
 
         // get file details
@@ -213,9 +240,9 @@ export const detailFile = async (req, res) => {
                 fileID,
             }
         });
-        return res.status(200).json({ success: true, data: fileDetails });
+        return res.status(200).json({ data: fileDetails });
     } catch(error) {
-        res.status(400).json({ success: false, message: error + ' '});
+        res.status(400).json({ message: error + ' '});
     };
 };
 
@@ -232,17 +259,21 @@ export const downloadFile = async (req, res) => {
     try {
         //identity verification
         const token = req.headers['x-access-token'];
-        const verify = verifyIdentify(token);
-        if(!verify.success) {
-            return res.status(verify.status).json({ success: verify.success, message: verify.message });
+        let decoded;
+        if(!token) {
+            return res.status(401).json({ message: 'No token provided.' });
         }
-
-        const { tokenDecoded } = verify;
+        jwt.verify(token, 'secret', (err, tokenDecoded) => {
+            if(err) {
+                return res.status(500).json({ message: 'Failed to authenticate token.' });
+            }
+            decoded = tokenDecoded;
+        });
 
         // check if this is an admin or user, file exist or this user is the owner of the file
         let check = false;
         let selectFile;
-        if(tokenDecoded.user.role === 1) {
+        if(decoded.user.role === 1) {
             check = true;
             selectFile = await File.findOne({
                 where: {
@@ -250,7 +281,7 @@ export const downloadFile = async (req, res) => {
                 }
             });
         } else {
-            const { userID } = tokenDecoded.user;
+            const { userID } = decoded.user;
             selectFile = await File.findOne({
                 where: {
                     userID,
@@ -263,7 +294,7 @@ export const downloadFile = async (req, res) => {
             }
         }
         if(!check) {
-            return res.status(400).json({ success: false, message: 'File not found' });
+            return res.status(400).json({ message: 'File not found' });
         }
 
         // download file
@@ -273,6 +304,6 @@ export const downloadFile = async (req, res) => {
         fs.writeFileSync(`${folder}/${selectFile.fileKey}`, Body);
         return res.status(200).json({ success: true });
     } catch(error) {
-        res.status(400).json({ success: false, message: error + ' '});
+        res.status(400).json({ message: error + ' '});
     };
 }

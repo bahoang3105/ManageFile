@@ -1,6 +1,5 @@
 import db from '../models';
 import bcyptjs from 'bcryptjs';
-import verifyIdentify from './verifyIdentity';
 
 const User = db.users;
 
@@ -8,20 +7,25 @@ export const getAllUser = async (req, res) => {
     try {
         //identity verification
         const token = req.headers['x-access-token'];
-        const verify = verifyIdentify(token);
-        if(!verify.success) {
-            return res.status(verify.status).json({ success: verify.success, message: verify.message });
+        let decoded;
+        if(!token) {
+            return res.status(401).json({ message: 'No token provided.' });
         }
-        const { tokenDecoded } = verify;
-        if(tokenDecoded.user.role !== 1) {
-            return res.status(401).json({ success: false, message: 'You are not an admin.'});
+        jwt.verify(token, 'secret', (err, tokenDecoded) => {
+            if(err) {
+                return res.status(500).json({ message: 'Failed to authenticate token.' });
+            }
+            decoded = tokenDecoded;
+        });
+        if(decoded.user.role !== 1) {
+            return res.status(401).json({ message: 'You are not an admin.'});
         }
 
         //get all user
         const listUser = await User.findAll();
-        return res.status(200).json({ success: true, data: listUser });
+        return res.status(200).json({ data: listUser });
     } catch(error) {
-        return res.status(400).json({ success: false, message: error + ' '});
+        return res.status(400).json({ message: error + ' '});
     }
 };
 
@@ -29,13 +33,18 @@ export const deleteUser = async (req, res) => {
     try {
         //identity verification
         const token = req.headers['x-access-token'];
-        const verify = verifyIdentify(token);
-        if(!verify.success) {
-            return res.status(verify.status).json({ success: verify.success, message: verify.message });
+        let decoded;
+        if(!token) {
+            return res.status(401).json({ message: 'No token provided.' });
         }
-        const { tokenDecoded } = verify;
-        if(tokenDecoded.user.role !== 1) {
-            return res.status(401).json({ success: false, message: 'You are not an admin.'});
+        jwt.verify(token, 'secret', (err, tokenDecoded) => {
+            if(err) {
+                return res.status(500).json({ message: 'Failed to authenticate token.' });
+            }
+            decoded = tokenDecoded;
+        });
+        if(decoded.user.role !== 1) {
+            return res.status(401).json({ message: 'You are not an admin.'});
         }
 
         // delete this user
@@ -45,9 +54,9 @@ export const deleteUser = async (req, res) => {
                 userID
             }
         });
-        return res.status(200).json({ success: true });
+        return res.status(200);
     } catch(error) {
-        return res.status(400).json({ success: false, message: error + ' '});
+        return res.status(400).json({ message: error + ' '});
     }
 };
 
@@ -55,13 +64,18 @@ export const resetPassUser = async (req, res) => {
     try {
         //identity verification
         const token = req.headers['x-access-token'];
-        const verify = verifyIdentify(token);
-        if(!verify.success) {
-            return res.status(verify.status).json({ success: verify.success, message: verify.message });
+        let decoded;
+        if(!token) {
+            return res.status(401).json({ message: 'No token provided.' });
         }
-        const { tokenDecoded } = verify;
-        if(tokenDecoded.user.role !== 1) {
-            return res.status(401).json({ success: false, message: 'You are not an admin.'});
+        jwt.verify(token, 'secret', (err, tokenDecoded) => {
+            if(err) {
+                return res.status(500).json({ message: 'Failed to authenticate token.' });
+            }
+            decoded = tokenDecoded;
+        });
+        if(decoded.user.role !== 1) {
+            return res.status(401).json({ message: 'You are not an admin.'});
         }
 
         //chang password of this user
@@ -74,9 +88,9 @@ export const resetPassUser = async (req, res) => {
                 userID,
             }
         });
-        return res.status(200).json({ success: true });
+        return res.status(200);
     } catch(error) {
-        return res.status(400).json({ success: false, message: error + ' '});
+        return res.status(400).json({ message: error + ' '});
     }
 };
 
@@ -84,13 +98,18 @@ export const detailUser = async (req, res) => {
     try{
         //identity verification
         const token = req.headers['x-access-token'];
-        const verify = verifyIdentify(token);
-        if(!verify.success) {
-            return res.status(verify.status).json({ success: verify.success, message: verify.message });
+        let decoded;
+        if(!token) {
+            return res.status(401).json({ message: 'No token provided.' });
         }
-        const { tokenDecoded } = verify;
-        if(tokenDecoded.user.role !== 1) {
-            return res.status(401).json({ success: false, message: 'You are not an admin.'});
+        jwt.verify(token, 'secret', (err, tokenDecoded) => {
+            if(err) {
+                return res.status(500).json({ message: 'Failed to authenticate token.' });
+            }
+            decoded = tokenDecoded;
+        });
+        if(decoded.user.role !== 1) {
+            return res.status(401).json({ message: 'You are not an admin.'});
         }
 
         // get details of this user
@@ -101,11 +120,11 @@ export const detailUser = async (req, res) => {
             }
         });
         if(!detailUser) {
-            return res.status(400).json({ success: false, message: 'User not found.'});
+            return res.status(400).json({ message: 'User not found.'});
         }
-        return res.status(200).json({ success: true, data: detailUser });
+        return res.status(200).json({ data: detailUser });
     } catch(error) {
-        return res.status(400).json({ success: false, message: error + ' '});
+        return res.status(400).json({ message: error + ' '});
     }
 }
 
@@ -113,13 +132,18 @@ export const upgradeToAdmin = async (req, res) => {
     try{
         //identity verification
         const token = req.headers['x-access-token'];
-        const verify = verifyIdentify(token);
-        if(!verify.success) {
-            return res.status(verify.status).json({ success: verify.success, message: verify.message });
+        let decoded;
+        if(!token) {
+            return res.status(401).json({ message: 'No token provided.' });
         }
-        const { tokenDecoded } = verify;
-        if(tokenDecoded.user.role !== 1) {
-            return res.status(401).json({ success: false, message: 'You are not an admin.'});
+        jwt.verify(token, 'secret', (err, tokenDecoded) => {
+            if(err) {
+                return res.status(500).json({ message: 'Failed to authenticate token.' });
+            }
+            decoded = tokenDecoded;
+        });
+        if(decoded.user.role !== 1) {
+            return res.status(401).json({ message: 'You are not an admin.'});
         }
 
         // check if this user exists
@@ -130,7 +154,7 @@ export const upgradeToAdmin = async (req, res) => {
             }
         });
         if(!detailUser) {
-            return res.status(400).json({ success: false, message: 'User not found.'});
+            return res.status(400).json({ message: 'User not found.'});
         }
 
         // upgrade this user to admin
@@ -139,8 +163,8 @@ export const upgradeToAdmin = async (req, res) => {
                 userID,
             }
         });
-        return res.status(200).json({ success: true });
+        return res.status(200);
     } catch(error) {
-        return res.status(400).json({ success: false, message: error + ' '});
+        return res.status(400).json({ message: error + ' '});
     }
 }
