@@ -44,12 +44,12 @@ export const login = async (req, res) => {
             return res.status(400).json({ message: 'Wrong username or password!'});
         }
         const payload = {
-            user,
-            userID: user.id,
+            user: user.dataValues,
+            userID: user.dataValues.userID,
             created: new Date(),
         };
         const token = await jwt.sign(payload, 'secret', { expiresIn: '24h' });
-        return res.json({ token });
+        return res.json({ token, userID: payload.userID });
     } catch(err) {
         return res.status(400).json({ message: err + ' '});
     }

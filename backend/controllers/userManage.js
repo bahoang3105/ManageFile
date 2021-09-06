@@ -1,5 +1,6 @@
 import db from '../models';
 import bcyptjs from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 const User = db.users;
 
@@ -22,7 +23,11 @@ export const getAllUser = async (req, res) => {
         }
 
         //get all user
-        const listUser = await User.findAll();
+        const listUser = await User.findAll({
+            attributes: {
+                exclude: ['password']
+            }
+        });
         return res.status(200).json({ data: listUser });
     } catch(error) {
         return res.status(400).json({ message: error + ' '});
@@ -115,6 +120,9 @@ export const detailUser = async (req, res) => {
         // get details of this user
         const { userID } = req.body;
         const detailUser = await User.findOne({
+            attributes: {
+                exclude: ['password']
+            },
             where: {
                 userID,
             }
