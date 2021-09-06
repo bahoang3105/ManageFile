@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import CIcon from '@coreui/icons-react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import {
   CButton,
   CCard,
@@ -21,10 +21,11 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [status, setStatus] = useState('');
+  let history = useHistory();
 
   const format = /[!@#$%^&*()+=[\]{};':"\\|,<>/?]+/;
 
-  const check = async(username, password, repeatPassword) => {
+  const checkSignup = async(username, password, repeatPassword) => {
     if(!username || !password || !repeatPassword) {
       setStatus("You need input all fields!");
       return;
@@ -46,16 +47,13 @@ const Register = () => {
       return;
     }
     setStatus("");
-    console.log("dsdsd");
-    const isSuccess = await axios.post("http://localhost:6000/user/signup", { username, password });
-    console.log("huhuhu")
-    console.log(isSuccess)
-    if(!isSuccess.data.success) {
-      setStatus(isSuccess.data.message);
-      return;
+    try {
+      await axios.post("http://localhost:6000/user/signup", { username, password });
+      alert('Success Register!');
+      return history.push('/login');
+    } catch(error) {
+      console.log(error.response);
     }
-    alert('Success Register!');
-    window.location.href = 'login';
   };
 
   return (
@@ -110,12 +108,12 @@ const Register = () => {
                       onChange={(e) => setRepeatPassword(e.target.value)}  
                     />
                   </CInputGroup>
-                  <CButton color="success" block onClick={() => check(username, password, repeatPassword)}>Create Account</CButton>
+                  <CButton color="success" block onClick={() => checkSignup(username, password, repeatPassword)}>Create Account</CButton>
                   <p className="auth-status">{status}</p>
-                  <p className='auth-comment'>
+                  <div className='auth-comment'>
                     <p>Do you have an account?&nbsp;</p> 
                     <Link to='login'>Login</Link>
-                  </p>
+                  </div>
                 </CForm>
               </CCardBody>
             </CCard>

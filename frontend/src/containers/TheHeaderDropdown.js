@@ -20,7 +20,7 @@ const TheHeaderDropdown = () => {
           <CImg
             src={'avatars/6.jpg'}
             className="c-avatar-img"
-            alt="admin@bootstrapmaster.com"
+            alt="admin@filesmanager.com"
           />
         </div>
       </CDropdownToggle>
