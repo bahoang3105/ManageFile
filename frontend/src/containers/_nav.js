@@ -21,13 +21,8 @@ const _nav =  [
         name: 'My Files',
         to: '/files/my-files',
       },
-      {
-        _tag: 'CSidebarNavItem',
-        name: "Upload File",
-        to: '/files/upload-file'
-      },
     ],
   },
 ]
 
-export default _nav
+export default _nav;

@@ -11,14 +11,12 @@ import {
 
 
 export const getFiles = token => {
-    console.log('dsad')
-    return async (dispatch, getState) => {
-        const files = await axios.get('http://localhost:6000/file', {
+    return async (dispatch) => {
+        const files = await axios.get('http://localhost:6000/admin/all', {
             headers: {
                 'x-access-token': token,
             }
         });
-        console.log(files);
         dispatch({
             type: GET_FILES,
             payload: files.data,
@@ -27,13 +25,12 @@ export const getFiles = token => {
 };
 
 export const getUsers = token => {
-    return async (dispatch, getState) => {
+    return async (dispatch) => {
         const users = await axios.get('http://localhost:6000/admin/user', {
             headers: {
                 'x-access-token': token,
             }
         });
-        console.log(users);
         dispatch({
             type: GET_USERS,
             payload: users.data,

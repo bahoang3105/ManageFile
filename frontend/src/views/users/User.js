@@ -1,41 +1,59 @@
-import React from 'react'
-import { CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
+import { useEffect } from 'react';
+import CIcon from '@coreui/icons-react';
+import { CRow, CCol } from '@coreui/react';
+import { getListUsers, getListFiles } from 'src/redux/selectors';
+import { connect, useDispatch } from 'react-redux';
+import { getFiles } from 'src/redux/actions';
+import TableDetail from '../TableDetail';
+import Table from '../Table';
 
-import usersData from './UsersData'
-
-const User = ({match}) => {
-  const user = usersData.find( user => user.id.toString() === match.params.id)
+const User = ({ users, files, match }) => {
+  const id = match.params.id
+  const user = users.find( user => user.userID.toString() === id)
   const userDetails = user ? Object.entries(user) : 
     [['id', (<span><CIcon className="text-muted" name="cui-icon-ban" /> Not found</span>)]]
+  
+    const dispatch = useDispatch();
+    const token = localStorage.getItem('token');
+    useEffect(() => {
+      if(!files) {
+        dispatch(getFiles(token));
+      }
+    });
+
+    let userFiles = [];
+    if(files) {
+      for(let i = 0; i < files.length; i++) {
+        if(files[i].userID.toString() === id) {
+          userFiles.push(files[i]);
+        }
+      }
+    }
 
   return (
     <CRow>
-      <CCol lg={6}>
-        <CCard>
-          <CCardHeader>
-            User id: {match.params.id}
-          </CCardHeader>
-          <CCardBody>
-              <table className="table table-striped table-hover">
-                <tbody>
-                  {
-                    userDetails.map(([key, value], index) => {
-                      return (
-                        <tr key={index.toString()}>
-                          <td>{`${key}:`}</td>
-                          <td><strong>{value}</strong></td>
-                        </tr>
-                      )
-                    })
-                  }
-                </tbody>
-              </table>
-          </CCardBody>
-        </CCard>
+      <CCol lg={5}>
+        <TableDetail
+          data={userDetails}
+          id={match.params.id}
+          nameOfTable='User ID'
+        />
+      </CCol>
+      <CCol lg={7}>
+        <Table
+          data={userFiles}
+          nameOfTable='User Files'
+          listField={['fileID', 'userID', 'date', 'fileName', 'size']}
+          detail='files/detail'
+        />
       </CCol>
     </CRow>
   )
 }
 
-export default User
+const mapStateToProps = (state) => ({
+  users: getListUsers(state),
+  files: getListFiles(state)
+});
+
+export default connect(mapStateToProps)(User);

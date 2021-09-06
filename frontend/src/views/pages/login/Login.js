@@ -38,6 +38,7 @@ const Login = () => {
     try {
       const { data } = await axios.post('http://localhost:6000/user/login', { username, password });
       localStorage.setItem('token', data.token);
+      localStorage.setItem('userID', data.userID);
       return history.push('..');
     } catch(error) {
       setStatus(error.response.data.message);
