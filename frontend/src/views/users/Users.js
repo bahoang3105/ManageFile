@@ -3,8 +3,10 @@ import { getUsers } from 'src/redux/actions';
 import { getListUsers } from 'src/redux/selectors';
 import { connect, useDispatch } from 'react-redux';
 import Table from '../Table';
+import CheckLogin from 'src/CheckLogin';
 
 const Users = ({ users }) => {
+  CheckLogin();
   const dispatch = useDispatch();
   const token = localStorage.getItem('token');
   useEffect(() => {

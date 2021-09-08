@@ -1,5 +1,6 @@
 import axios from "axios";
 import {
+    LOGOUT,
     DELETE_FILE,
     DELETE_USER,
     UPGRADE_TO_ADMIN,
@@ -23,7 +24,8 @@ export const getFiles = token => {
                 payload: files.data,
             });
         } catch(err) {
-            console.log(err.response);
+            alert(err.response.data.message);
+            window.location.href = '/404';
         };
     };
 };
@@ -41,7 +43,8 @@ export const getUsers = token => {
                 payload: users.data,
             });
         } catch(err) {
-            console.log(err.response);
+            alert(err.response.data.message);
+            window.location.href = '/404';
         }
     };
 }
@@ -59,7 +62,7 @@ export const deleteFile = (id, token) => {
             });
             dispatch({
                 type: DELETE_FILE,
-                payload: id,
+                payload: id
             });
         } catch(err) {
             console.log(err.response);
@@ -68,7 +71,6 @@ export const deleteFile = (id, token) => {
 };
 
 export const deleteUser = (id, token) => {
-    console.log('da chay toi action');
     return async (dispatch) =>  {
         try {
             await axios.delete('http://localhost:6000/admin/user/delete', {
@@ -81,16 +83,16 @@ export const deleteUser = (id, token) => {
             });
             dispatch({
                 type: DELETE_USER,
-                payload: id,
+                payload: id
             });
         } catch(err) {
             console.log(err.response);
+            window.location.href = '/404';
         }
     }
 };
 
 export const upgradeToAdmin = (id, token) => {
-    console.log('ffdsfsdf')
     return async (dispatch) =>  {
         try {
             await axios.post('http://localhost:6000/admin/user/upgrade', { userID: id }, {
@@ -142,4 +144,8 @@ export const uploadFile = (file, token) => {
         }
     }
 };
+
+export const logout = () => ({
+    type: LOGOUT
+});
 

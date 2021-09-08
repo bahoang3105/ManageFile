@@ -2,6 +2,7 @@ import {
     DELETE_FILE,
     UPLOAD_FILE,
     GET_FILES,
+    LOGOUT,
 } from "../actionTypes";
 
 const initialState = {
@@ -44,6 +45,12 @@ const listFile = (state = initialState, action) => {
             return {
                 ...state,
                 files: action.payload.data
+            }
+        }
+        case LOGOUT: {
+            return {
+                ...state,
+                files: null
             }
         }
         default:

@@ -11,27 +11,28 @@ import ResetPassword from '../button/ResetPassword';
 import UpgradeToAdmin from './UpgradeToAdmin';
 
 const User = ({ users, files, match }) => {
-  const id = match.params.id
-  const user = users.find( user => user.userID.toString() === id)
+  const id = match.params.id;
+  const user = users.find( user => user.userID.toString() === id);
   const userDetails = user ? Object.entries(user) : 
     [['id', (<span><CIcon className="text-muted" name="cui-icon-ban" /> Not found</span>)]]
-  
-    const dispatch = useDispatch();
-    const token = localStorage.getItem('token');
-    useEffect(() => {
-      if(!files) {
-        dispatch(getFiles(token));
-      }
-    });
+  const display = (user.role === 0) ? 'd-block' : 'd-none';
 
-    let userFiles = [];
-    if(files) {
-      for(let i = 0; i < files.length; i++) {
-        if(files[i].userID.toString() === id) {
-          userFiles.push(files[i]);
-        }
+  const dispatch = useDispatch();
+  const token = localStorage.getItem('token');
+  useEffect(() => {
+    if(!files) {
+      dispatch(getFiles(token));
+    }
+  });
+
+  let userFiles = [];
+  if(files) {
+    for(let i = 0; i < files.length; i++) {
+      if(files[i].userID.toString() === id) {
+        userFiles.push(files[i]);
       }
     }
+  }
 
   return (
     <div>
@@ -59,7 +60,7 @@ const User = ({ users, files, match }) => {
         <CCol lg={2}>
           <ResetPassword id={match.params.id}/>
         </CCol>
-        <CCol lg={2}>
+        <CCol lg={2} className={display}>
           <UpgradeToAdmin id={match.params.id}/>
         </CCol>
       </CRow>

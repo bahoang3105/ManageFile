@@ -11,6 +11,7 @@ const File = ({ files, match }) => {
   const file = files.find( file => file.fileID.toString() === match.params.id)
   const fileDetail = file ? Object.entries(file) : 
     [['id', (<span><CIcon className="text-muted" name="cui-icon-ban" /> Not found</span>)]]
+    
     return (
     <div>
       <TableDetail

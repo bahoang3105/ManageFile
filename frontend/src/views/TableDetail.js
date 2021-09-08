@@ -1,6 +1,6 @@
 import { CCard, CCardBody, CCardHeader } from '@coreui/react'
 
-const TableDetail = ({ data, id, nameOfTable}) => {
+const TableDetail = ({ data, nameOfTable}) => {
   return (
     <CCard>
       <CCardHeader>
