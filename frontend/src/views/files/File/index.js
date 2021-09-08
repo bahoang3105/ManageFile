@@ -3,6 +3,9 @@ import CIcon from '@coreui/icons-react'
 import { getListFiles } from 'src/redux/selectors';
 import { connect } from 'react-redux';
 import TableDetail from 'src/views/TableDetail';
+import Download from '../../button/Download';
+import { CCol, CRow } from '@coreui/react';
+import DeleteFile from './DeleteFile';
 
 const File = ({ files, match }) => {
   const file = files.find( file => file.fileID.toString() === match.params.id)
@@ -13,8 +16,16 @@ const File = ({ files, match }) => {
       <TableDetail
         data={fileDetail}
         id={match.params.id}
-        nameOfTable='File ID'
+        nameOfTable='File Detail'
       />
+      <CRow>
+        <CCol lg={2}>
+          <Download /> 
+        </CCol>
+        <CCol lg={2}> 
+          <DeleteFile id={match.params.id}/>
+        </CCol>
+      </CRow>
     </div>
   );
 };

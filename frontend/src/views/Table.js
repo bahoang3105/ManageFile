@@ -10,9 +10,6 @@ import {
 
 const Table = ({ data, nameOfTable, listField, detail }) => {
   let numOfPage;
-  if(data) {
-    numOfPage = Math.ceil(data.length / 5);
-  }
   const history = useHistory();
   const queryPage = useLocation().search.match(/page=([0-9]+)/, '');
   const currentPage = Number(queryPage && queryPage[1] ? queryPage[1] : 1);
@@ -27,6 +24,23 @@ const Table = ({ data, nameOfTable, listField, detail }) => {
   }, [currentPage, page])
 
   const [key, ...unkey] = listField;
+
+  if(data) {
+    if(data.length > 0) {
+      numOfPage = Math.ceil(data.length / 5);
+    } else {
+      return (
+        <CCard>
+          <CCardHeader>
+            {nameOfTable}
+          </CCardHeader>
+          <CCardBody>
+            No Files
+          </CCardBody>
+        </CCard>
+      );
+    }
+  } 
 
   return (
     <CCard>
@@ -45,7 +59,7 @@ const Table = ({ data, nameOfTable, listField, detail }) => {
           itemsPerPage={5}
           activePage={page}
           clickableRows
-          onRowClick={(item) => history.push(`/${detail}/${detail==='files' ? item.fileID : item.userID}`)}
+          onRowClick={(item) => history.push(`/${detail}/detail/${detail==='files' ? item.fileID : item.userID}`)}
           // 
         />
         <CPagination

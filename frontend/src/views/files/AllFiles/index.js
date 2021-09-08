@@ -19,7 +19,7 @@ const AllFiles = ({ files }) => {
         data={files}
         nameOfTable='All Files'
         listField={['fileID', 'userID', 'date', 'fileName', 'size']}
-        detail='files/detail'
+        detail='files'
       />
     </div>
   );

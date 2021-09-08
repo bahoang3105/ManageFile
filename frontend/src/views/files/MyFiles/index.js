@@ -3,6 +3,7 @@ import { connect, useDispatch } from 'react-redux';
 import { getListFiles } from 'src/redux/selectors';
 import { getFiles } from 'src/redux/actions';
 import { useEffect } from 'react';
+import Upload from '../../button/Upload';
 
 const MyFiles = ({ files }) => {
   const dispatch = useDispatch();
@@ -29,8 +30,9 @@ const MyFiles = ({ files }) => {
         data={myFiles}
         nameOfTable='My Files'
         listField={['fileID', 'date', 'fileName', 'size']}
-        detail='files/detail'
+        detail='files'
       />
+      <Upload/>
     </div>
   );
 };
