@@ -29,15 +29,7 @@ const upload = multer({storage}).single('file');
 
 router.route('/login').post(loginAdmin);
 
-// get all file in db
 router.route('/all').get(getAllFileInDb); 
-// get all file of an user
-router.route('/userFile').get(getAllUserFile); 
-router.route('/uploadFile').post(upload, insertFile);
-router.route('/deleteFile').delete(deleteFile);
-router.route('/detailFile').get(detailFile);
-router.route('/downloadFile').get(downloadFile);
-
 router.route('/user').get(getAllUser);
 router.route('/user/delete').delete(deleteUser);
 router.route('/user/resetPassword').post(resetPassUser);

@@ -3,6 +3,7 @@ import bcyptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 const User = db.users;
+const File = db.files;
 
 export const getAllUser = async (req, res) => {
     try {
@@ -52,11 +53,18 @@ export const deleteUser = async (req, res) => {
             return res.status(401).json({ message: 'You are not an admin.'});
         }
 
-        // delete this user
+        // delete files of this user
         const { userID } = req.body;
+        await File.destroy({
+            where:{
+                userID,
+            }
+        })
+
+        // delete user
         await User.destroy({
             where: {
-                userID
+                userID,
             }
         });
         return res.status(200);

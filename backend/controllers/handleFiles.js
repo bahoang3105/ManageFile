@@ -141,8 +141,10 @@ export const insertFile = async (req, res) => {
             fileName: originalname,
         };
 
-        await File.create(newFile);
-        return res.status(201).json({ success: true })
+        const data = await File.create(newFile);
+        const id = data.fileID;
+        newFile.fileID = id;
+        return res.status(201).json({ success: true, newFile })
     } catch(error) {
         res.status(400).json({ message: error + ' '});
     };
@@ -255,7 +257,7 @@ const downloadFromS3 = (fileKey) => {
 };
 
 export const downloadFile = async (req, res) => {
-    const fileID = req.body.fileID;
+    const { fileID, folder } = req.body;
     try {
         //identity verification
         const token = req.headers['x-access-token'];
@@ -298,7 +300,6 @@ export const downloadFile = async (req, res) => {
         }
 
         // download file
-        const { folder } = req.body;
         const { Body } = await downloadFromS3(selectFile.dataValues.fileKey);
         
         fs.writeFileSync(`${folder}/${selectFile.fileKey}`, Body);

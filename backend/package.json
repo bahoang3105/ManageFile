@@ -11,6 +11,7 @@
   "author": "Hoang Nguyen",
   "license": "MIT",
   "dependencies": {
+    "accesscontrol": "^2.2.1",
     "aws-sdk": "^2.978.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
