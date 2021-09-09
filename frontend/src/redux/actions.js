@@ -14,7 +14,7 @@ import {
 export const getFiles = token => {
     return async (dispatch) => {
         try {
-            const files = await axios.get('http://localhost:6000/admin/all', {
+            const files = await axios.get('http://localhost:6000/file', {
                 headers: {
                     'x-access-token': token,
                 }

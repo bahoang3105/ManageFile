@@ -2,24 +2,24 @@ const _nav =  [
   {
     _tag: 'CSidebarNavItem',
     name: 'Users',
-    to: '/users',
+    to: '/admin/users',
     icon: 'cil-user',
   },
   {
     _tag: 'CSidebarNavDropdown',
     name: 'Files',
-    route: '/files',
+    route: 'admin/files',
     icon: 'cil-file',
     _children: [
       {
         _tag: 'CSidebarNavItem',
         name: 'All Files',
-        to: '/files/all-files',
+        to: '/admin/all-files',
       },
       {
         _tag: 'CSidebarNavItem',
         name: 'My Files',
-        to: '/files/my-files',
+        to: '/admin/my-files',
       },
     ],
   },

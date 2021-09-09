@@ -8,11 +8,13 @@ const File = React.lazy(() => import('./views/files/File'));
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
-  { path: '/users', exact: true,  name: 'Users', component: Users },
-  { path: '/users/detail/:id', exact: true, name: 'User Details', component: User },
-  { path: '/files', exact: true, name: 'Files', component: AllFiles },
-  { path: '/files/all-files', exact: true, name: 'All Files', component: AllFiles },
-  { path: '/files/my-files', name: 'My Files', component: MyFiles },
+  { path: '/admin/users', exact: true,  name: 'Users', component: Users },
+  { path: '/admin/users/detail/:id', exact: true, name: 'User Details', component: User },
+  { path: '/admin/files', exact: true, name: 'Files', component: AllFiles },
+  { path: '/admin/all-files', exact: true, name: 'All Files', component: AllFiles },
+  { path: '/admin/my-files', name: 'My Files', component: MyFiles },
+  { path: '/admin/files/detail/:id', name: 'File Details', component: File },
+  { path: '/files', exact:true, name: 'My Files', component: MyFiles },
   { path: '/files/detail/:id', name: 'File Details', component: File },
 ];
 

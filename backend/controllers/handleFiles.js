@@ -27,68 +27,18 @@ export const getAllFile = async (req, res) => {
             decoded = tokenDecoded;
         });
 
-        const userID = decoded.user.userID;
+        const { userID, role } = decoded.user;
+
+        // if being admin
+        if(role === 1) {
+            const listFile = await File.findAll();
+            return res.status(200).json({ data: listFile });
+        }
+
         // get list file of this user
         const listFile = await File.findAll({ 
             where: { userID } 
         });
-        return res.status(200).json({ data: listFile });
-    } catch(error) {
-        return res.status(400).json({ message: error + ' '});
-    };
-};
-
-// admin get all file of an user
-export const getAllUserFile = async(req, res) => {
-    try {
-        //identity verification
-        const token = req.headers['x-access-token'];
-        let decoded;
-        if(!token) {
-            return res.status(401).json({ message: 'No token provided.' });
-        }
-        jwt.verify(token, 'secret', (err, tokenDecoded) => {
-            if(err) {
-                return res.status(500).json({ message: 'Failed to authenticate token.' });
-            }
-            decoded = tokenDecoded;
-        });
-        if(decoded.user.role !== 1) {
-            return res.status(401).json({ message: 'You are not an admin.'});
-        }
-
-        // get all file of an user
-        const { userID } = req.body;
-        const listFile = await File.findAll({ 
-            where: { userID } 
-        });
-        return res.status(200).json({ data: listFile });
-    } catch(error) {
-        return res.status(400).json({ message: error + ' '});
-    };
-};
-
-// admin get all file in DB
-export const getAllFileInDb = async(req, res) => {
-    try {
-        //identity verification
-        const token = req.headers['x-access-token'];
-        let decoded;
-        if(!token) {
-            return res.status(401).json({ message: 'No token provided.' });
-        }
-        jwt.verify(token, 'secret', (err, tokenDecoded) => {
-            if(err) {
-                return res.status(500).json({ message: 'Failed to authenticate token.' });
-            }
-            decoded = tokenDecoded;
-        });
-        if(decoded.user.role !== 1) {
-            return res.status(401).json({ message: 'You are not an admin.'});
-        }
-
-        // get all file in DB
-        const listFile = await File.findAll();
         return res.status(200).json({ data: listFile });
     } catch(error) {
         return res.status(400).json({ message: error + ' '});
@@ -196,55 +146,6 @@ export const deleteFile = async (req, res) => {
         return res.status(200).json({ success: true });
     } catch(error) {
         res.status(400).json({ message: error + ' ' });
-    };
-};
-
-export const detailFile = async (req, res) => {
-    const { fileID } = req.body;
-    try {
-        //identity verification
-        const token = req.headers['x-access-token'];
-        let decoded;
-        if(!token) {
-            return res.status(401).json({ message: 'No token provided.' });
-        }
-        jwt.verify(token, 'secret', (err, tokenDecoded) => {
-            if(err) {
-                return res.status(500).json({ message: 'Failed to authenticate token.' });
-            }
-            decoded = tokenDecoded;
-        });
-
-        // check if this is an admin or user, file exist or this user is the owner of the file
-        let check = false;
-        if(decoded.user.role === 1) {
-            check = true;
-        } else {
-            const userID = decoded.user.userID;
-            const selectFile = await File.findAll({
-                where: {
-                    userID,
-                    fileID,
-                }
-            });
-
-            if(selectFile) {
-                check = true;
-            }
-        }
-        if(!check) {
-            return res.status(400).json({ message: 'File not found' });
-        }
-
-        // get file details
-        const fileDetails = await File.findOne({
-            where: {
-                fileID,
-            }
-        });
-        return res.status(200).json({ data: fileDetails });
-    } catch(error) {
-        res.status(400).json({ message: error + ' '});
     };
 };
 

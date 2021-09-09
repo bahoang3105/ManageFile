@@ -59,7 +59,7 @@ const Table = ({ data, nameOfTable, listField, detail }) => {
           itemsPerPage={5}
           activePage={page}
           clickableRows
-          onRowClick={(item) => history.push(`/${detail}/detail/${detail==='files' ? item.fileID : item.userID}`)}
+          onRowClick={(item) => history.push(`${detail}/detail/${detail === 'files' ? item.fileID : item.userID}`)}
           // 
         />
         <CPagination

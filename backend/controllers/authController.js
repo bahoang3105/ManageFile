@@ -49,7 +49,7 @@ export const login = async (req, res) => {
             created: new Date(),
         };
         const token = await jwt.sign(payload, 'secret', { expiresIn: '24h' });
-        return res.json({ token, userID: payload.userID });
+        return res.json({ token, userID: payload.userID, role: user.dataValues.role });
     } catch(err) {
         return res.status(400).json({ message: err + ' '});
     }

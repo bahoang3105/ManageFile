@@ -9,6 +9,7 @@ const Logout = (props) => {
   const onLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userID');
+    localStorage.removeItem('role');
     props.logout();
     history.push('/login')
   }

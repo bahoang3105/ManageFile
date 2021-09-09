@@ -1,14 +1,13 @@
 import React from 'react'
 import {
   CDropdown,
-  CDropdownItem,
   CDropdownMenu,
   CDropdownToggle,
   CImg
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
+import Logout from 'src/views/button/Logout'
 
-const TheHeaderDropdown = () => {
+const TheHeaderDropdown = (props) => {
   return (
     <CDropdown
       inNav
@@ -18,17 +17,14 @@ const TheHeaderDropdown = () => {
       <CDropdownToggle className="c-header-nav-link" caret={false}>
         <div className="c-avatar">
           <CImg
-            src={'/avatars/6.jpg'}
+            src={props.avt}
             className="c-avatar-img"
             alt="admin@filesmanager.com"
           />
         </div>
       </CDropdownToggle>
-      <CDropdownMenu className="pt-0" placement="bottom-end">
-        <CDropdownItem>
-          <CIcon name="cil-lock-locked" className="mfe-2" />
-          Lock Account
-        </CDropdownItem>
+      <CDropdownMenu className="pt-0" placement="bottom-end" style={{ margin: 0 }}>
+        <Logout/>
       </CDropdownMenu>
     </CDropdown>
   )

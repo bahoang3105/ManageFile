@@ -39,10 +39,11 @@ const Login = () => {
       const { data } = await axios.post('http://localhost:6000/user/login', { username, password });
       localStorage.setItem('token', data.token);
       localStorage.setItem('userID', data.userID);
+      localStorage.setItem('role', data.role);
       if(data.role === 1) {
-        return history.push('/admin');
+        return history.push('/admin/users');
       }
-      return history.push('/');
+      return history.push('/files');
     } catch(error) {
       setStatus(error.response.data.message);
     }

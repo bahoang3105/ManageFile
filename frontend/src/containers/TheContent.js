@@ -15,6 +15,8 @@ const loading = (
   </div>
 )
 
+const home = (localStorage.getItem('role') === '1') ? '/admin/users' : '/files';
+
 const TheContent = () => {
   return (
     <main className="c-main">
@@ -35,7 +37,8 @@ const TheContent = () => {
                   )} />
               )
             })}
-            <Redirect from="/" to="/users" />
+            <Redirect from="/admin" to={home} />
+            <Redirect from="/" to={home} />
           </Switch>
         </Suspense>
       </CContainer>

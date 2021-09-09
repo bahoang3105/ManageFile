@@ -1,16 +1,18 @@
 import React from 'react'
 import {
   TheContent,
+  TheSidebar,
   TheFooter,
   TheHeader,
 } from './index'
 
-const TheLayout = () => {
+const TheLayoutAdmin = () => {
 
   return (
     <div className="c-app c-default-layout">
+      <TheSidebar/>
       <div className="c-wrapper">
-        <TheHeader avt='/avatars/1.png'/>
+        <TheHeader avt='/avatars/6.jpg'/>
         <div className="c-body">
           <TheContent/>
         </div>
@@ -20,4 +22,4 @@ const TheLayout = () => {
   )
 }
 
-export default TheLayout;
+export default TheLayoutAdmin
