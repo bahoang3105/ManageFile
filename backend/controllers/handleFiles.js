@@ -114,12 +114,14 @@ const downloadFromS3 = (fileKey) => {
     const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: fileKey,
+        Expires: 60,
     };
-    return s3.getObject(params).promise();
+    return s3.getSignedUrl('getObject', params);
 };
 
 export const downloadFile = async (req, res, next) => {
-    const { fileID, folder } = req.body;
+    const { fileID } = req.query;
+    console.log(fileID)
     try {
         //identity verification
         const token = req.headers['x-access-token'];
@@ -162,10 +164,9 @@ export const downloadFile = async (req, res, next) => {
         }
 
         // download file
-        const { Body } = await downloadFromS3(selectFile.dataValues.fileKey);
+        const url = await downloadFromS3(selectFile.dataValues.fileKey);
         
-        fs.writeFileSync(`${folder}/${selectFile.fileKey}`, Body);
-        return res.status(200).json({ success: true });
+        return res.status(200).json({ url });
     } catch(error) {
         next(error);
     };

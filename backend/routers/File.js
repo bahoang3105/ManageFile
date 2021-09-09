@@ -21,6 +21,6 @@ const upload = multer({storage}).single('file');
 router.post('/uploadFile', allowIfLoggedin, upload, insertFile);
 router.get('/', allowIfLoggedin, grantAccess('readOwn', 'File'), getAllFile);
 router.delete('/deleteFile', allowIfLoggedin, grantAccess('deleteAny', 'File'), deleteFile);
-router.get('/downloadFile', allowIfLoggedin, downloadFile);
+router.get('/downloadFile', downloadFile);
 
 export default router;

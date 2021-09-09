@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import axios from 'axios';
 import {
@@ -18,36 +18,34 @@ import {
 import CIcon from '@coreui/icons-react'
 
 const Login = () => {
+  const hasLogin = async () => {
+    try {
+      const role = localStorage.getItem('role');
+      const token = localStorage.getItem('token');
+      const userID = localStorage.getItem('userID');
+      if(role !== null && token !== null && userID != null) {
+        const hasLogged = await axios.post('http://localhost:6000/user/checkLogin', {
+          userID,
+          role
+        }, {
+          headers: {
+            'x-access-token': token,
+          }
+        });
+        if(hasLogged.data.check) {
+          history.push('/');
+        }
+      }
+    } catch(err) {
+      console.log(err.response);
+    }
+  }
+  hasLogin();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [status, setStatus] = useState('');
   let history = useHistory();
-
-  useEffect(() => {
-    const hasLogin = async () => {
-      try {
-        const role = localStorage.getItem('role');
-        const token = localStorage.getItem('token');
-        const userID = localStorage.getItem('userID');
-        if(role !== null && token !== null && userID != null) {
-          const hasLogged = await axios.post('http://localhost:6000/user/checkLogin', {
-            userID,
-            role
-          }, {
-            headers: {
-              'x-access-token': token,
-            }
-          });
-          if(hasLogged.data.check) {
-            history.push('/');
-          }
-        }
-      } catch(err) {
-        console.log(err.response);
-      }
-    }
-    hasLogin();
-  });
 
   const format = /[!@#$%^&*()+=[\]{};':'\\|,<>/?]+/;
 
