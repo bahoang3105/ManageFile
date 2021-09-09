@@ -16,7 +16,7 @@ const Table = ({ data, nameOfTable, listField, detail }) => {
   const [page, setPage] = useState(currentPage);
 
   const pageChange = newPage => {
-    currentPage !== newPage && history.push(`/${detail}?page=${newPage}`);
+    currentPage !== newPage && history.push(`${detail}?page=${newPage}`);
   }
 
   useEffect(() => {
