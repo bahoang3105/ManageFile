@@ -12,22 +12,9 @@ const s3 = new AWS.S3({
     secretAccessKey: process.env.AWS_SECRET,
 });
 
-export const getAllFile = async (req, res) => {
+export const getAllFile = async (req, res, next) => {
     try {
-        //identity verification
-        const token = req.headers['x-access-token'];
-        let decoded;
-        if(!token) {
-            return res.status(401).json({ message: 'No token provided.' });
-        }
-        jwt.verify(token, 'secret', (err, tokenDecoded) => {
-            if(err) {
-                return res.status(500).json({ message: 'Failed to authenticate token.' });
-            }
-            decoded = tokenDecoded;
-        });
-
-        const { userID, role } = decoded.user;
+        const { userID, role } = req.user;
 
         // if being admin
         if(role === 1) {
@@ -41,7 +28,7 @@ export const getAllFile = async (req, res) => {
         });
         return res.status(200).json({ data: listFile });
     } catch(error) {
-        return res.status(400).json({ message: error + ' '});
+        next(error);
     };
 };
 
@@ -57,21 +44,8 @@ const uploadFile = ({ originalname, buffer }) => {
     return s3.upload(params).promise();
 }
 
-export const insertFile = async (req, res) => {
+export const insertFile = async (req, res, next) => {
     try {
-        //identity verification
-        const token = req.headers['x-access-token'];
-        let decoded;
-        if(!token) {
-            return res.status(401).json({ message: 'No token provided.' });
-        }
-        jwt.verify(token, 'secret', (err, tokenDecoded) => {
-            if(err) {
-                return res.status(500).json({ message: 'Failed to authenticate token.' });
-            }
-            decoded = tokenDecoded;
-        });
-
         // get file details
         const { size, originalname } = req.file;
         const myFile = originalname.split('.');
@@ -87,7 +61,7 @@ export const insertFile = async (req, res) => {
             fileKey,
             size,
             date,
-            userID: decoded.user.userID,
+            userID: req.user.userID,
             fileName: originalname,
         };
 
@@ -96,32 +70,19 @@ export const insertFile = async (req, res) => {
         newFile.fileID = id;
         return res.status(201).json({ success: true, newFile })
     } catch(error) {
-        res.status(400).json({ message: error + ' '});
+        next(error);
     };
 };
 
-export const deleteFile = async (req, res) => {
+export const deleteFile = async (req, res, next) => {
     const fileID = req.body.fileID;
+    const { userID, role } = req.user;
     try {
-        //identity verification
-        const token = req.headers['x-access-token'];
-        let decoded;
-        if(!token) {
-            return res.status(401).json({ message: 'No token provided.' });
-        }
-        jwt.verify(token, 'secret', (err, tokenDecoded) => {
-            if(err) {
-                return res.status(500).json({ message: 'Failed to authenticate token.' });
-            }
-            decoded = tokenDecoded;
-        });
-
         // check if this is an admin or user, file exist or this user is the owner of the file
         let check = false;
-        if(decoded.user.role === 1) {
+        if(role === 1) {
             check = true;
         } else {
-            const { userID } = decoded.user;
             const selectFile = await File.findAll({
                 where: {
                     userID,
@@ -134,7 +95,7 @@ export const deleteFile = async (req, res) => {
             }
         }
         if(!check) {
-            return res.status(400).json({ message: 'File not found' });
+            next(new Error('File not found'));
         }
 
         // delete file
@@ -145,7 +106,7 @@ export const deleteFile = async (req, res) => {
         });
         return res.status(200).json({ success: true });
     } catch(error) {
-        res.status(400).json({ message: error + ' ' });
+        next(error);
     };
 };
 
@@ -157,18 +118,18 @@ const downloadFromS3 = (fileKey) => {
     return s3.getObject(params).promise();
 };
 
-export const downloadFile = async (req, res) => {
+export const downloadFile = async (req, res, next) => {
     const { fileID, folder } = req.body;
     try {
         //identity verification
         const token = req.headers['x-access-token'];
         let decoded;
         if(!token) {
-            return res.status(401).json({ message: 'No token provided.' });
+            next(new Error('No token provided'));
         }
         jwt.verify(token, 'secret', (err, tokenDecoded) => {
             if(err) {
-                return res.status(500).json({ message: 'Failed to authenticate token.' });
+                next(new Error('Failed to authenticate token'));
             }
             decoded = tokenDecoded;
         });
@@ -197,7 +158,7 @@ export const downloadFile = async (req, res) => {
             }
         }
         if(!check) {
-            return res.status(400).json({ message: 'File not found' });
+            next(new Error('File not found'));
         }
 
         // download file
@@ -206,6 +167,6 @@ export const downloadFile = async (req, res) => {
         fs.writeFileSync(`${folder}/${selectFile.fileKey}`, Body);
         return res.status(200).json({ success: true });
     } catch(error) {
-        res.status(400).json({ message: error + ' '});
+        next(error);
     };
 }

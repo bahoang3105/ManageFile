@@ -4,6 +4,7 @@ import { getListFiles } from 'src/redux/selectors';
 import { getFiles } from 'src/redux/actions';
 import { useEffect } from 'react';
 import Upload from '../../button/Upload';
+import { Redirect } from 'react-router';
 
 const MyFiles = ({ files }) => {
   const dispatch = useDispatch();
@@ -24,13 +25,23 @@ const MyFiles = ({ files }) => {
     }
   }
 
+  const hasLogged = (localStorage.getItem('token') && localStorage.getItem('role') && localStorage.getItem('userID'));
+  if(!hasLogged) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userID');
+    localStorage.removeItem('role');
+    return(
+      <Redirect to='/login' />
+    );
+  }
+
   return (
     <div>
       <Table
         data={myFiles}
         nameOfTable='My Files'
         listField={['fileID', 'date', 'fileName', 'size']}
-        detail='files'
+        detail='my-files'
       />
       <Upload/>
     </div>

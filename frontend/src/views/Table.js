@@ -9,6 +9,7 @@ import {
 } from '@coreui/react';
 
 const Table = ({ data, nameOfTable, listField, detail }) => {
+  const isFile = detail.includes('files');
   let numOfPage;
   const history = useHistory();
   const queryPage = useLocation().search.match(/page=([0-9]+)/, '');
@@ -59,7 +60,7 @@ const Table = ({ data, nameOfTable, listField, detail }) => {
           itemsPerPage={5}
           activePage={page}
           clickableRows
-          onRowClick={(item) => history.push(`${detail}/detail/${detail === 'files' ? item.fileID : item.userID}`)}
+          onRowClick={(item) => history.push(`${isFile ? 'files' : 'users'}/detail/${isFile ? item.fileID : item.userID}`)}
           // 
         />
         <CPagination

@@ -11,10 +11,13 @@ import {
 } from "./actionTypes";
 
 
-export const getFiles = token => {
+export const getFiles = (token, role) => {
+    let link = '';
+    if(role === 1) link = 'http://localhost:6000/admin/file';
+    else link = 'http://localhost:6000/file';
     return async (dispatch) => {
         try {
-            const files = await axios.get('http://localhost:6000/file', {
+            const files = await axios.get(link, {
                 headers: {
                     'x-access-token': token,
                 }

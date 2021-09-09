@@ -7,9 +7,10 @@ import { useEffect } from 'react';
 const AllFiles = ({ files }) => {
   const dispatch = useDispatch();
   const token = localStorage.getItem('token');
+  const role = localStorage.getItem('role');
   useEffect(() => {
     if(!files) {
-      dispatch(getFiles(token));
+      dispatch(getFiles(token, role));
     }
   });
   
@@ -19,7 +20,7 @@ const AllFiles = ({ files }) => {
         data={files}
         nameOfTable='All Files'
         listField={['fileID', 'userID', 'date', 'fileName', 'size']}
-        detail='files'
+        detail='all-files'
       />
     </div>
   );

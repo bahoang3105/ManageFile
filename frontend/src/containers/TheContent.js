@@ -15,7 +15,13 @@ const loading = (
   </div>
 )
 
-const home = (localStorage.getItem('role') === '1') ? '/admin/users' : '/files';
+const hasLogged = (localStorage.getItem('token') && localStorage.getItem('role') && localStorage.getItem('userID'));
+if(!hasLogged) {
+  localStorage.removeItem('token');
+  localStorage.removeItem('userID');
+  localStorage.removeItem('role');
+}
+const home = hasLogged ? ((localStorage.getItem('role') === '1') ? '/admin/users' : '/files') : '/login';
 
 const TheContent = () => {
   return (

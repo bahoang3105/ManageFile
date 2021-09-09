@@ -6,6 +6,7 @@ import {
     deleteFile, 
     downloadFile 
 } from '../controllers/handleFiles';
+import { grantAccess, allowIfLoggedin } from '../controllers/permission';
 
 const router = Router();
 
@@ -17,9 +18,9 @@ const storage = multer.memoryStorage({
 
 const upload = multer({storage}).single('file');
 
-router.route('/uploadFile').post(upload, insertFile);
-router.route('/').get(getAllFile);
-router.route('/deleteFile').delete(deleteFile);
-router.route('/downloadFile').get(downloadFile);
+router.post('/uploadFile', allowIfLoggedin, upload, insertFile);
+router.get('/', allowIfLoggedin, grantAccess('readOwn', 'File'), getAllFile);
+router.delete('/deleteFile', allowIfLoggedin, grantAccess('deleteAny', 'File'), deleteFile);
+router.get('/downloadFile', allowIfLoggedin, downloadFile);
 
 export default router;
