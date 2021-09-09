@@ -9,6 +9,7 @@ import {
 } from '@coreui/react';
 
 const Table = ({ data, nameOfTable, listField, detail }) => {
+  const isNum = isNaN(detail);
   const isFile = detail.includes('files');
   let numOfPage;
   const history = useHistory();
@@ -60,7 +61,7 @@ const Table = ({ data, nameOfTable, listField, detail }) => {
           itemsPerPage={5}
           activePage={page}
           clickableRows
-          onRowClick={(item) => history.push(`${isFile ? 'files' : 'users'}/detail/${isFile ? item.fileID : item.userID}`)}
+          onRowClick={(item) => history.push(`${isNum ? (isFile ? 'files' : 'users') : '../../files'}/detail/${isNum ? (isFile ? item.fileID : item.userID) : item.fileID}`)}
           // 
         />
         <CPagination
