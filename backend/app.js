@@ -13,17 +13,21 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use(async (req, res, next) => {
-  if (req.headers['x-access-token']) {
-    const accessToken = req.headers['x-access-token'];
-    const { user, exp } = await jwt.verify(accessToken, 'secret');
-    //Check if token has expired
-    if(exp < Date.now().valueOf() / 1000) {
-      return res.status(401).json({ message: "JWT token has expired, please login to obtain a new one"});
+  try {
+    if (req.headers['x-access-token']) {
+      const accessToken = req.headers['x-access-token'];
+      const { user, exp } = await jwt.verify(accessToken, 'secret');
+      //Check if token has expired
+      if(exp < Date.now().valueOf() / 1000) {
+        return res.status(401).json({ message: "JWT token has expired, please login to obtain a new one"});
+      }
+      res.locals.loggedInUser = user;
+      next();
+    } else {
+      next();
     }
-    res.locals.loggedInUser = user;
-    next();
-  } else {
-    next();
+  } catch(err) {
+    next(err);
   }
 });
 

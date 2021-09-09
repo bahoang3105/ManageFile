@@ -49,7 +49,7 @@ const User = ({ users, files, match }) => {
             data={userFiles}
             nameOfTable='User Files'
             listField={['fileID', 'date', 'fileName', 'size']}
-            detail='../../files'
+            detail={user.userID.toString()}
           />
         </CCol>
       </CRow>

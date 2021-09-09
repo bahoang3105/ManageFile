@@ -55,3 +55,15 @@ export const login = async (req, res) => {
         return res.status(400).json({ message: err + ' '});
     }
 };
+
+export const hasLogged = async (req, res, next) => {
+    try {
+        const { userID, role } = req.body;
+        if(parseInt(userID) === req.user.userID && parseInt(role) === req.user.role) {
+            return res.status(200).json({ check: true});
+        }
+        return res.status(400).json({ check: false });
+    } catch(err) {
+        return res.status(400).json({ check: false });
+    }
+}

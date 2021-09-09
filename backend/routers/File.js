@@ -1,3 +1,4 @@
+import { grantAccess, allowIfLoggedin } from '../controllers/permission';
 import { Router } from 'express';
 import multer from 'multer';
 import {
@@ -6,7 +7,6 @@ import {
     deleteFile, 
     downloadFile 
 } from '../controllers/handleFiles';
-import { grantAccess, allowIfLoggedin } from '../controllers/permission';
 
 const router = Router();
 
