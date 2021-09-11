@@ -27,8 +27,18 @@ const File = (sequelize, Sequelize) => {
         date: {
             type: Sequelize.DATE,
         },
-    }, { freezeTableName: true, timestamps: false, tableName: 'file' });
-
+    }, {
+        freezeTableName: true,
+        timestamps: false,
+        tableName: 'file',
+        indexes: [
+            {
+                name:'file_index',
+                using: 'BTREE',
+                fields: ['fileID']
+            }
+        ]
+    });
     return File;
 };
 

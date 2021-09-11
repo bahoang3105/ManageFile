@@ -15,8 +15,18 @@ const User = (sequelize, Sequelize) => {
             type: Sequelize.INTEGER,
             defaultValue: 0 // 0 is normal user, 1 is admin
         }
-    }, { freezeTableName: true, timestamps: false, tableName: 'user' });
-
+    }, {
+        freezeTableName: true,
+        timestamps: false,
+        tableName: 'user',
+        indexes: [
+            {
+                name:'user_index',
+                using: 'BTREE',
+                fields: ['userID']
+            }
+        ]
+    });
     return User;
 }
 
