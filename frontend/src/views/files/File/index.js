@@ -6,11 +6,12 @@ import TableDetail from 'src/views/TableDetail';
 import { CButton, CCol, CRow } from '@coreui/react';
 import DeleteFile from './DeleteFile';
 import axios from 'axios';
+import { baseURL } from 'src/config';
 
 const File = ({ files, match }) => {
   const download = async (fileID) => {
     const token = localStorage.getItem('token');
-    const url = await axios.get('http://localhost:6000/file/downloadFile', {
+    const url = await axios.get(baseURL + 'file/downloadFile', {
       params: {
         fileID
       },

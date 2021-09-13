@@ -120,25 +120,12 @@ const downloadFromS3 = (fileKey) => {
 
 export const downloadFile = async (req, res, next) => {
     const { fileID } = req.query;
-    console.log(fileID)
+    const { userID, role } = req.user;
     try {
-        //identity verification
-        const token = req.headers['x-access-token'];
-        let decoded;
-        if(!token) {
-            next(new Error('No token provided'));
-        }
-        jwt.verify(token, 'secret', (err, tokenDecoded) => {
-            if(err) {
-                next(new Error('Failed to authenticate token'));
-            }
-            decoded = tokenDecoded;
-        });
-
         // check if this is an admin or user, file exist or this user is the owner of the file
         let check = false;
         let selectFile;
-        if(decoded.user.role === 1) {
+        if(role === 1) {
             check = true;
             selectFile = await File.findOne({
                 where: {
@@ -146,7 +133,6 @@ export const downloadFile = async (req, res, next) => {
                 }
             });
         } else {
-            const { userID } = decoded.user;
             selectFile = await File.findOne({
                 where: {
                     userID,
@@ -169,4 +155,8 @@ export const downloadFile = async (req, res, next) => {
     } catch(error) {
         next(error);
     };
+}
+
+export const preview = async () => {
+
 }
