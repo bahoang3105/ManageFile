@@ -155,7 +155,3 @@ export const downloadFile = async (req, res, next) => {
         next(error);
     };
 }
-
-export const preview = async () => {
-
-}
