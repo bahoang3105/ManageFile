@@ -24,7 +24,7 @@ const Login = () => {
       const role = localStorage.getItem('role');
       const token = localStorage.getItem('token');
       const userID = localStorage.getItem('userID');
-      if(role !== null && token !== null && userID != null) {
+      if(role !== null && token !== null && userID !== null) {
         const hasLogged = await axios.post(baseURL + 'user/checkLogin', {
           userID,
           role
@@ -35,6 +35,11 @@ const Login = () => {
         });
         if(hasLogged.data.check) {
           history.push('/');
+        } else {
+          localStorage.removeItem('role');
+          localStorage.removeItem('token');
+          localStorage.removeItem('userID');
+          history.push('/login')
         }
       }
     } catch(err) {

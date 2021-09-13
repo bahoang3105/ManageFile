@@ -27,8 +27,7 @@ export const getFiles = (token, role) => {
                 payload: files.data,
             });
         } catch(err) {
-            alert(err.response.data.message);
-            window.location.href = '/404';
+            console.log(err.response.data.message);
         };
     };
 };
@@ -46,8 +45,7 @@ export const getUsers = token => {
                 payload: users.data,
             });
         } catch(err) {
-            alert(err.response.data.message);
-            window.location.href = '/404';
+            console.log(err.response.data.message);
         }
     };
 }
@@ -90,7 +88,6 @@ export const deleteUser = (id, token) => {
             });
         } catch(err) {
             console.log(err.response);
-            window.location.href = '/404';
         }
     }
 };
