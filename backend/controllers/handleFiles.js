@@ -2,7 +2,6 @@ import 'dotenv/config';
 import db from '../models';
 import AWS from 'aws-sdk';
 import { v4 as uuid } from 'uuid';
-import jwt from 'jsonwebtoken';
 
 const File = db.files;
 
