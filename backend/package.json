@@ -21,6 +21,7 @@
     "express": "^4.17.1",
     "express-handlebars": "^5.3.3",
     "jsonwebtoken": "^8.5.1",
+    "local-cors-proxy": "^1.1.0",
     "multer": "^1.4.3",
     "mysql2": "^2.3.0",
     "sequelize": "^6.6.5",

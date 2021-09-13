@@ -16,6 +16,7 @@ import {
   CRow
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
+import { baseURL } from 'src/config';
 
 const Login = () => {
   const hasLogin = async () => {
@@ -24,7 +25,7 @@ const Login = () => {
       const token = localStorage.getItem('token');
       const userID = localStorage.getItem('userID');
       if(role !== null && token !== null && userID != null) {
-        const hasLogged = await axios.post('http://localhost:6000/user/checkLogin', {
+        const hasLogged = await axios.post(baseURL + 'user/checkLogin', {
           userID,
           role
         }, {
@@ -60,7 +61,7 @@ const Login = () => {
     }
     setStatus('');
     try {
-      const { data } = await axios.post('http://localhost:6000/user/login', { username, password });
+      const { data } = await axios.post(baseURL + 'user/login', { username, password });
       localStorage.setItem('token', data.token);
       localStorage.setItem('userID', data.userID);
       localStorage.setItem('role', data.role);

@@ -36,6 +36,7 @@
     "core-js": "^3.9.1",
     "dotenv": "^10.0.0",
     "enzyme": "^3.11.0",
+    "local-cors-proxy": "^1.1.0",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
     "react-app-polyfill": "^2.0.0",
@@ -54,7 +55,7 @@
     "react-scripts": "^4.0.3"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=3000 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:cov": "npm test -- --coverage --watchAll=false",

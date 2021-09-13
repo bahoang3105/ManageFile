@@ -1,12 +1,14 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import db from './models';
+import db, { init } from './models';
 import jwt from 'jsonwebtoken';
 
 const app = express();
 
 db.sequelize.sync();
+
+init();
 
 app.use(bodyParser.json());
 

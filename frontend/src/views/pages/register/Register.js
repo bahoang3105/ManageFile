@@ -15,6 +15,7 @@ import {
   CInputGroupText,
   CRow
 } from '@coreui/react';
+import { baseURL } from 'src/config';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -30,7 +31,7 @@ const Register = () => {
         const token = localStorage.getItem('token');
         const userID = localStorage.getItem('userID');
         if(role !== null && token !== null && userID != null) {
-          const hasLogged = await axios.post('http://localhost:6000/user/checkLogin', {
+          const hasLogged = await axios.post(baseURL + 'user/checkLogin', {
             userID,
             role
           }, {
@@ -74,7 +75,7 @@ const Register = () => {
     }
     setStatus("");
     try {
-      await axios.post("http://localhost:6000/user/signup", { username, password });
+      await axios.post("http://localhost:4321/user/signup", { username, password });
       alert('Success Register!');
       return history.push('/login');
     } catch(error) {

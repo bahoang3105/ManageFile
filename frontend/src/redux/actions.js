@@ -9,12 +9,12 @@ import {
     GET_FILES,
     GET_USERS,
 } from "./actionTypes";
-
+import { baseURL } from "src/config";
 
 export const getFiles = (token, role) => {
     let link = '';
-    if(role === 1) link = 'http://localhost:6000/admin/file';
-    else link = 'http://localhost:6000/file';
+    if(role === 1) link = baseURL + 'admin/file';
+    else link = baseURL + 'file';
     return async (dispatch) => {
         try {
             const files = await axios.get(link, {
@@ -36,7 +36,7 @@ export const getFiles = (token, role) => {
 export const getUsers = token => {
     return async (dispatch) => {
         try {
-            const users = await axios.get('http://localhost:6000/admin/user', {
+            const users = await axios.get(baseURL + 'admin/user', {
                 headers: {
                     'x-access-token': token,
                 }
@@ -55,7 +55,7 @@ export const getUsers = token => {
 export const deleteFile = (id, token) => {
     return async (dispatch) =>  {
         try {
-            await axios.delete('http://localhost:6000/file/deleteFile', {
+            await axios.delete(baseURL + 'file/deleteFile', {
                 headers: {
                     'x-access-token': token,
                 },
@@ -76,7 +76,7 @@ export const deleteFile = (id, token) => {
 export const deleteUser = (id, token) => {
     return async (dispatch) =>  {
         try {
-            await axios.delete('http://localhost:6000/admin/user/delete', {
+            await axios.delete(baseURL + 'admin/user/delete', {
                 headers: {
                     'x-access-token': token,
                 },
@@ -98,7 +98,7 @@ export const deleteUser = (id, token) => {
 export const upgradeToAdmin = (id, token) => {
     return async (dispatch) =>  {
         try {
-            await axios.post('http://localhost:6000/admin/user/upgrade', { userID: id }, {
+            await axios.post(baseURL + 'admin/user/upgrade', { userID: id }, {
                 headers: {
                     'x-access-token': token,
                 }
@@ -116,7 +116,7 @@ export const upgradeToAdmin = (id, token) => {
 export const resetPassUser = (id, token) => {
     return async (dispatch) =>  {
         try {
-            await axios.post('http://localhost:6000/admin/user/resetPassword', { userID: id }, {
+            await axios.post(baseURL + 'admin/user/resetPassword', { userID: id }, {
                 headers: {
                     'x-access-token': token,
                 }
@@ -133,7 +133,7 @@ export const resetPassUser = (id, token) => {
 export const uploadFile = (file, token) => {
     return async (dispatch) =>  {
         try {
-            const newFile = await axios.post('http://localhost:6000/file/uploadFile', file, {
+            const newFile = await axios.post(baseURL + 'file/uploadFile', file, {
                 headers: {
                     'x-access-token': token,
                 }
